@@ -1,49 +1,56 @@
-use crate::solver::{AoCDay, Solution, Solver};
+use crate::solver::{AoCDay, Solution, Puzzle};
 
 struct Santa {
     current_floor: i64,
     steps_to_basement: u64,
 }
 
-enum Direction {
-    MoveUp,
-    MoveDown,
+enum Move {
+    Up,
+    Down,
 }
 
 enum Errs {
     ParseError,
 }
 
-fn apply_dir(val: &i64, dir: &Direction) -> i64 {
+fn apply_move(val: &i64, dir: &Move) -> i64 {
     match dir {
-        Direction::MoveUp => val + 1,
-        Direction::MoveDown => val - 1,
+        Move::Up => val + 1,
+        Move::Down => val - 1,
     }
 }
 
-fn parse(s: &str) -> Result<Vec<Direction>, Errs> {
+fn parse(s: &str) -> Result<&Vec<Move>, Errs> {
     s.chars().collect().map(|c| match c {
-        '(' => Ok(Direction::MoveUp),
-        ')' => Ok(Direction::MoveDown),
+        '(' => Ok(Move::Up),
+        ')' => Ok(Move::Down),
         _ => Err(Errs::ParseError),
     })
 }
 
-fn follow_directions(santa: Santa, directions: &Vec<Direction>) -> Santa {
+pub fn aoc_day_1 (s: &str) -> AoCDay<&Vec<Move>, i64, u64, Errs> {
+    AoCDay {
+        parser: parse,
+        puzzle_part1:
+    }
+}
+
+fn follow_directions(santa: Santa, directions: &Vec<Move>) -> Santa {
     Santa {
-        current_floor: directions.iter().fold(0, apply_dir),
+        current_floor: directions.iter().fold(0, apply_move),
         steps_to_basement: santa.steps_to_basement,
     }
 }
 
-fn locate_basement(santa: Santa, directions: &Vec<Direction>) -> Santa {
+fn locate_basement(santa: Santa, directions: &Vec<Move>) -> Santa {
     Santa {
         current_floor: santa.current_floor,
         steps_to_basement: directions
             .iter()
             .scan(0i64, |acc, dir| match acc {
                 -1 => None,
-                acc => Some(apply_dir(acc, dir)),
+                acc => Some(apply_move(acc, dir)),
             })
             .count() as u64,
     }
